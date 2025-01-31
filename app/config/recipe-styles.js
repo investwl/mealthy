@@ -2,6 +2,7 @@ import { Platform, StyleSheet } from "react-native";
 
 const styles = StyleSheet.create({
     container: {
+      paddingTop: 5,
       flex: 1,
       backgroundColor: '#F9F6F6',
     },
@@ -17,7 +18,7 @@ const styles = StyleSheet.create({
       alignItems: 'center',
       backgroundColor: '#FFFBE2',
       height: 40,
-      flex: 0.9,
+      flex: 1,
       borderRadius: 8,
       shadowColor: '#000',
       shadowOffset: { width: 0, height: 2 },
@@ -29,8 +30,8 @@ const styles = StyleSheet.create({
       fontSize: 16,
       fontFamily: 'PlusJakartaSans-Regular',
       backgroundColor: '#FFFBE2',
-      borderRadius: 8,
       paddingLeft: 30,
+      flex: 1,
     },
     searchIcon: {
       width: 20,

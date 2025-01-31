@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, FlatList, Image, ImageBackground, TouchableOpacity, ScrollView } from 'react-native';
 import styles from '../config/recipe-styles';
 import { useFonts } from 'expo-font';
@@ -12,7 +12,7 @@ const Recipe = () => {
 
   const [searchText, setSearchText] = useState('');
   const [selectedFilter, setSelectedFilter] = useState(null);
-  const [filteredRecipes, setFilteredRecipes] = useState([]);
+  const [filteredRecipes, setFilteredRecipes] = useState({});
 
   const filters = [
     { id: '1', name: 'Mealthy Top Picks' },
@@ -38,11 +38,15 @@ const Recipe = () => {
       { id: 'lunch3', title: 'Fish Stew with Fennel and Saffron', time: '30min', calories: '468kcal', image: require('../assets/lunch-3.jpg'), filters: ['1', '2', '3'] },
     ],
     Dinner: [
-      { id: 'dinner1', title: 'Shrimp Taco in Salad Leaves with Guacamole', time: '20min', calories: '498kcal', image: require('../assets/dinner-1.jpg'), filters: ['1', '2'] },
-      { id: 'dinner2', title: 'Creamy Lemon Zucchini Pasta', time: '35min', calories: '502kcal', image: require('../assets/dinner-2.jpg'), filters: ['2'] },
-      { id: 'dinner3', title: 'Crispy Tofu with Maple-Soy Glaze', time: '30min', calories: '362kcal', image: require('../assets/dinner-3.webp'), filters: ['1', '2', '3', '4'] },
+      { id: 'dinner1', title: 'Shrimp Taco in Salad Leaves with Guacamole', time: '20min', calories: '498kcal', image: require('../assets/dinner-1.jpg'), filters: ['1', '4'] },
+      { id: 'dinner2', title: 'Creamy Lemon Zucchini Pasta', time: '35min', calories: '502kcal', image: require('../assets/dinner-2.jpg'), filters: ['1', '2'] },
+      { id: 'dinner3', title: 'Crispy Tofu with Maple-Soy Glaze', time: '30min', calories: '362kcal', image: require('../assets/dinner-3.webp'), filters: ['1', '4'] },
     ],
   };
+
+  useEffect(() => {
+    setFilteredRecipes(allRecipes);
+  }, []);
 
   const filterRecipes = (filterId) => {
     if (filterId) {
@@ -140,9 +144,6 @@ const Recipe = () => {
             onChangeText={(text) => setSearchText(text)}
           />
         </View>
-        <TouchableOpacity style={styles.filterButton}>
-          <Text style={styles.filterIcon}>☰</Text>
-        </TouchableOpacity>
       </View>
 
       {!selectedFilter && (
