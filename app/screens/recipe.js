@@ -1,59 +1,67 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, FlatList, Image, ImageBackground, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, TextInput, FlatList, Image, ImageBackground, TouchableOpacity, ScrollView } from 'react-native';
 import styles from '../config/recipe-styles';
 import { useFonts } from 'expo-font';
 
 const Recipe = () => {
-
-  // loading fonts dulu
   const [fontsLoaded] = useFonts({
     'PlusJakartaSans-Regular': require('../assets/fonts/Plus_Jakarta_Sans/static/PlusJakartaSans-Regular.ttf'),
     'PlusJakartaSans-Medium': require('../assets/fonts/Plus_Jakarta_Sans/static/PlusJakartaSans-Medium.ttf'),
     'PlusJakartaSans-Bold': require('../assets/fonts/Plus_Jakarta_Sans/static/PlusJakartaSans-Bold.ttf'),
   });
 
-  
-  
-  // sekarang ini bagian filter atas
-  // some variables yang diassign ke state
   const [searchText, setSearchText] = useState('');
   const [selectedFilter, setSelectedFilter] = useState(null);
-  
+  const [filteredRecipes, setFilteredRecipes] = useState([]);
+
   const filters = [
     { id: '1', name: 'Mealthy Top Picks' },
-    { id: '2', name: 'Allergic to Milk' },
-    { id: '3', name: 'Lactose Intolerant' },
-    { id: '4', name: 'Gluten Free' },
-    { id: '5', name: 'Vegan' },
+    { id: '2', name: 'Lactose Intolerant' },
+    { id: '3', name: 'Gluten Free' },
+    { id: '4', name: 'Vegetarian' },
   ];
 
-  
-  // list utk trending
   const trendingData = [
     { id: 'trend1', title: 'Plant-based Food', image: require('../assets/trending-page1.jpg')},
     { id: 'trend2', title: '15-minute Meals', image: require('../assets/trending-page2.webp')},
   ];
-  
-  // list utk breakfast, lunch, dinner.
-  const sectionData = {
+
+  const allRecipes = {
     Breakfast: [
-      { id: 'breakfast1', title: 'Baked Carrot Cake Oatmeal with Cardamom', time: '20min', calories: '292kcal', image: require('../assets/breakfast-1.jpeg') },
-      { id: 'breakfast2', title: 'Salted Caramel Overnight Oats', time: '30min', calories: '495kcal', image: require('../assets/breakfast-2.jpeg') },
-      { id: 'breakfast3', title: 'Buckwheat Pancakes with berries', time: '20min', calories: '314kcal', image: require('../assets/breakfast-3.jpeg') },
+      { id: 'breakfast1', title: 'Baked Carrot Cake Oatmeal with Cardamom', time: '20min', calories: '292kcal', image: require('../assets/breakfast-1.jpeg'), filters: ['1', '4'] },
+      { id: 'breakfast2', title: 'Salted Caramel Overnight Oats', time: '30min', calories: '495kcal', image: require('../assets/breakfast-2.jpeg'), filters: ['1'] },
+      { id: 'breakfast3', title: 'Buckwheat Pancakes with berries', time: '20min', calories: '314kcal', image: require('../assets/breakfast-3.jpeg'), filters: ['1'] },
     ],
     Lunch: [
-      { id: 'lunch1', title: 'Pumpkin Empanadas', time: '40min', calories: '192kcal', image: require('../assets/lunch-1.jpg') },
-      { id: 'lunch2', title: 'Onigiri with Salmon Filling', time: '40min', calories: '362kcal', image: require('../assets/lunch-2.jpg') },
-      { id: 'lunch3', title: 'Fish Stew with Fennel and Saffron', time: '30min', calories: '468kcal', image: require('../assets/lunch-3.jpg') },
+      { id: 'lunch1', title: 'Pumpkin Empanadas', time: '40min', calories: '192kcal', image: require('../assets/lunch-1.jpg'), filters: ['2', '3'] },
+      { id: 'lunch2', title: 'Onigiri with Salmon Filling', time: '40min', calories: '362kcal', image: require('../assets/lunch-2.jpg'), filters: ['2', '3'] },
+      { id: 'lunch3', title: 'Fish Stew with Fennel and Saffron', time: '30min', calories: '468kcal', image: require('../assets/lunch-3.jpg'), filters: ['1', '2', '3'] },
     ],
     Dinner: [
-      { id: 'dinner1', title: 'Shrimp Taco in Salad Leaves with Guacamole', time: '20min', calories: '498kcal', image: require('../assets/dinner-1.jpg') },
-      { id: 'dinner2', title: 'Creamy Lemon Zucchini Pasta', time: '35min', calories: '502kcal', image: require('../assets/dinner-2.jpg') },
-      { id: 'dinner3', title: 'Crispy Tofu with Maple-Soy Glaze', time: '30min', calories: '362kcal', image: require('../assets/dinner-3.webp') },
+      { id: 'dinner1', title: 'Shrimp Taco in Salad Leaves with Guacamole', time: '20min', calories: '498kcal', image: require('../assets/dinner-1.jpg'), filters: ['1', '2'] },
+      { id: 'dinner2', title: 'Creamy Lemon Zucchini Pasta', time: '35min', calories: '502kcal', image: require('../assets/dinner-2.jpg'), filters: ['2'] },
+      { id: 'dinner3', title: 'Crispy Tofu with Maple-Soy Glaze', time: '30min', calories: '362kcal', image: require('../assets/dinner-3.webp'), filters: ['1', '2', '3', '4'] },
     ],
   };
-  
-  // tampilan kalau page blm ke load karena font blm ke load
+
+  const filterRecipes = (filterId) => {
+    if (filterId) {
+      const filtered = {};
+      Object.keys(allRecipes).forEach((section) => {
+        filtered[section] = allRecipes[section].filter(recipe => recipe.filters.includes(filterId));
+      });
+      setFilteredRecipes(filtered);
+    } else {
+      setFilteredRecipes(allRecipes);
+    }
+  };
+
+  const handleFilterSelect = (filterId) => {
+    const newFilter = selectedFilter === filterId ? null : filterId;
+    setSelectedFilter(newFilter);
+    filterRecipes(newFilter);
+  };
+
   if (!fontsLoaded) {
     return <View style={styles.loadingContainer}><Text>Loading...</Text></View>
   }
@@ -64,7 +72,7 @@ const Recipe = () => {
         styles.filterItem,
         selectedFilter === item.id && styles.filterItemSelected,
       ]}
-      onPress={() => setSelectedFilter(item.id)}
+      onPress={() => handleFilterSelect(item.id)}
     >
       <Text style={[styles.filterText, selectedFilter === item.id && styles.filterTextSelected]}>
         {item.name}
@@ -72,9 +80,7 @@ const Recipe = () => {
     </TouchableOpacity>
   );
 
-  // function dibawah ini utk trending 
   const renderTrendingItem = ({ item }) => {
-    // untuk id trend1 dan trend2, beda bagian trend beda style
     const dynamicStyle = item.id === 'trend1' ? styles.trend1 : styles.trend2;
 
     return (
@@ -89,7 +95,6 @@ const Recipe = () => {
       </TouchableOpacity>
     );
   };
-
 
   const renderRecipeItem = ({ item }) => (
     <TouchableOpacity style={styles.recipeItem}>
@@ -116,8 +121,6 @@ const Recipe = () => {
 
   return (
     <ScrollView style={styles.container}>
-
-      {/* filter tag */}
       <FlatList
         data={filters}
         horizontal
@@ -127,7 +130,6 @@ const Recipe = () => {
         style={styles.filterList}
       />
 
-      {/* Searchbar and Filter Icon */}
       <View style={styles.searchAndFilterContainer}>
         <View style={styles.searchContainer}>
           <Image source={require('../assets/search-icon.png')} style={styles.searchIcon} />
@@ -143,20 +145,20 @@ const Recipe = () => {
         </TouchableOpacity>
       </View>
 
-      {/* Trending Section */}
-      <FlatList
-        data={trendingData}
-        horizontal
-        keyExtractor={(item) => item.id}
-        renderItem={renderTrendingItem}
-        showsHorizontalScrollIndicator={false}
-        style={styles.trendingList}
-      />
+      {!selectedFilter && (
+        <FlatList
+          data={trendingData}
+          horizontal
+          keyExtractor={(item) => item.id}
+          renderItem={renderTrendingItem}
+          showsHorizontalScrollIndicator={false}
+          style={styles.trendingList}
+        />
+      )}
 
-      {/* Recipe Sections */}
-      {Object.keys(sectionData).map((section) => (
+      {Object.keys(filteredRecipes).map((section) => (
         <View key={section}>
-          {renderSection(section, sectionData[section])}
+          {renderSection(section, filteredRecipes[section])}
         </View>
       ))}
     </ScrollView>
