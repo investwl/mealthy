@@ -1,4 +1,3 @@
-// components/AddPostBox.js
 import React, { useState, useMemo } from 'react';
 import {
     View,
@@ -13,11 +12,13 @@ import {
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import { launchImageLibrary } from 'react-native-image-picker';
 
+
 export default function AddPostBox({ onAddRecipe, onAddEmoji, onPost, isEmojiPickerVisible, emojis, handleEmojiSelect, handleCloseEmojiPicker}) {
     const [text, setText] = useState('');
     const [images, setImages] = useState([]);
     const [recipe, setRecipe] = useState(null);
     const [isImageButtonDisabled, setIsImageButtonDisabled] = useState(false);
+
 
     // Handle adding image
     const handleAddImage = async () => {
@@ -31,6 +32,7 @@ export default function AddPostBox({ onAddRecipe, onAddEmoji, onPost, isEmojiPic
             maxHeight: 800,
             quality: 0.8,
         };
+
 
         launchImageLibrary(options, (response) => {
             if (response.didCancel) {
@@ -51,6 +53,8 @@ export default function AddPostBox({ onAddRecipe, onAddEmoji, onPost, isEmojiPic
     };
 
 
+
+
     const handleRemoveImage = (index) => {
         const updatedImages = images.filter((_, i) => i !== index);
         setImages(updatedImages);
@@ -60,9 +64,13 @@ export default function AddPostBox({ onAddRecipe, onAddEmoji, onPost, isEmojiPic
     };
 
 
+
+
     const handleRemoveRecipe = () => {
         setRecipe(null);
     };
+
+
 
 
     const handlePostPress = () => {
@@ -75,6 +83,7 @@ export default function AddPostBox({ onAddRecipe, onAddEmoji, onPost, isEmojiPic
     const handleAddRecipePress = () => {
         onAddRecipe(setRecipe);
     }
+
 
     const isPostButtonDisabled = useMemo(() => {
         return !text.trim() && images.length === 0 && !recipe;
@@ -94,6 +103,8 @@ export default function AddPostBox({ onAddRecipe, onAddEmoji, onPost, isEmojiPic
                     placeholderTextColor="#888"
                 />
             </View>
+
+
 
 
             {/* Small Recipe Container */}
@@ -118,6 +129,8 @@ export default function AddPostBox({ onAddRecipe, onAddEmoji, onPost, isEmojiPic
             )}
 
 
+
+
             {/* Images */}
             <View style={styles.imageContainer}>
                 <ScrollView horizontal={true}>
@@ -134,6 +147,7 @@ export default function AddPostBox({ onAddRecipe, onAddEmoji, onPost, isEmojiPic
                     ))}
                 </ScrollView>
             </View>
+
 
             {/* Emoji Picker */}
           {isEmojiPickerVisible && (
@@ -164,6 +178,7 @@ export default function AddPostBox({ onAddRecipe, onAddEmoji, onPost, isEmojiPic
                     <FontAwesome name="smile-o" size={24} color="black" />
                 </TouchableOpacity>
 
+
                 <TouchableOpacity
                     style={[
                         styles.postButton,
@@ -178,6 +193,7 @@ export default function AddPostBox({ onAddRecipe, onAddEmoji, onPost, isEmojiPic
         </View>
     );
 }
+
 
 const styles = StyleSheet.create({
     container: {

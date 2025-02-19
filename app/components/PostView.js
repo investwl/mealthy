@@ -4,6 +4,7 @@ import { FontAwesome, Ionicons } from "@expo/vector-icons"; // Import the icons
 import CommentBox from "./CommentBox";
 import { useNavigation } from '@react-navigation/native';
 
+
 export default function PostView({ post }) {
     // Static user data (replace with actual user data in a real app)
     const username = "Mie";
@@ -16,6 +17,7 @@ export default function PostView({ post }) {
     const navigation = useNavigation();
     const [isReportModalVisible, setIsReportModalVisible] = useState(false);
      const [reportReason, setReportReason] = useState('');
+
 
     const handleCommentPress = () => {
         setIsCommentBoxOpen(!isCommentBoxOpen);
@@ -81,6 +83,7 @@ export default function PostView({ post }) {
         navigation.navigate('Image Viewer', { imageUrl });
     };
 
+
     return (
         <View style={styles.postContainer}>
             {/* User Info */}
@@ -98,11 +101,13 @@ export default function PostView({ post }) {
                 </View>
             </View>
 
+
             {/* Post Content Container */}
             <View style={styles.postContentContainer}>
                 <View style={styles.postContent}>
                     {/* Post Text */}
                     <Text style={styles.text}>{post.text}</Text>
+
 
                     {/* Post Images */}
                     {post.images && (
@@ -114,6 +119,7 @@ export default function PostView({ post }) {
                             ))}
                         </View>
                     )}
+
 
                     {/* Recipe Details */}
                     {post.recipe && (
@@ -128,6 +134,7 @@ export default function PostView({ post }) {
                     )}
                 </View>
             </View>
+
 
             {/* Interaction Icons */}
             <View style={styles.iconBar}>
@@ -145,8 +152,10 @@ export default function PostView({ post }) {
                 </TouchableOpacity>
             </View>
 
+
            {/* Conditionally Render Separator Line */}
            {(isCommentBoxOpen || hasComment) && <View style={styles.separator} />}
+
 
             {/* Show CommentBox if comment button is pressed */}
             {isCommentBoxOpen && (
@@ -204,6 +213,7 @@ export default function PostView({ post }) {
         </View>
     );
 }
+
 
 const styles = StyleSheet.create({
       commentSectionContainer: {

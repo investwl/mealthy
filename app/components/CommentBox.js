@@ -1,15 +1,19 @@
- import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { View, TextInput, TouchableOpacity, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+
+
 
 
 export default function CommentBox({ onPostComment, onCancel }) {
     const [commentText, setCommentText] = useState('');
 
+
     const handlePost = () => {
         onPostComment(commentText);
         setCommentText('');
     };
+
 
     return (
         <View style={styles.container}>
@@ -36,6 +40,7 @@ export default function CommentBox({ onPostComment, onCancel }) {
         </View>
     );
 }
+
 
 const styles = StyleSheet.create({
     container: {

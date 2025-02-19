@@ -1,7 +1,7 @@
-// components/RecipeForm.js
 import React, { useState, useMemo } from 'react';
 import { View, TextInput, TouchableOpacity, Text, StyleSheet, ScrollView, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+
 
 export default function RecipeForm({ onPost, onRemove }) {
     const [title, setTitle] = useState('');
@@ -9,20 +9,25 @@ export default function RecipeForm({ onPost, onRemove }) {
     const [instructions, setInstructions] = useState([{ id: 1, text: '' }]);
     const [calories, setCalories] = useState(''); // Added state for calories
 
+
      // Static user data (replace with actual user data in a real app)
     const profileImage = null; // You might want to show a default icon if there is no profile picture.
+
 
     const addIngredient = () => {
         setIngredients([...ingredients, { id: ingredients.length + 1, name: '', weight: '' }]);
     };
 
+
     const addInstruction = () => {
         setInstructions([...instructions, { id: instructions.length + 1, text: '' }]);
     };
 
+
     const handleRemovePress = () => {
         onRemove();
     };
+
 
       const handlePostPress = () => {
         const recipeData = {
@@ -42,6 +47,8 @@ export default function RecipeForm({ onPost, onRemove }) {
       }, [title, ingredients, instructions]);
 
 
+
+
     return (
          <ScrollView style={styles.scrollViewContainer} contentContainerStyle={styles.scrollContentContainer} showsVerticalScrollIndicator={false}>
         <View style={styles.container}>
@@ -59,6 +66,8 @@ export default function RecipeForm({ onPost, onRemove }) {
                 onChangeText={setTitle}
                />
            </View>
+
+
 
 
           {/* Ingredients Section */}
@@ -101,6 +110,7 @@ export default function RecipeForm({ onPost, onRemove }) {
                  ))}
           </View>
 
+
            {/* Calories Section */}
             <View style={[styles.caloriesContainer, { marginTop: 2, justifyContent: 'flex-end' }]}>
                 <Text style={styles.totalCalories}>Total Calories</Text>
@@ -113,6 +123,7 @@ export default function RecipeForm({ onPost, onRemove }) {
                   />
                 <Text style={styles.caloriesUnit}>kkal</Text>
            </View>
+
 
            {/* Instructions Section */}
           <View style={styles.sectionContainer}>
@@ -162,6 +173,7 @@ export default function RecipeForm({ onPost, onRemove }) {
              </ScrollView>
     );
 }
+
 
 const styles = StyleSheet.create({
     scrollViewContainer: {
@@ -263,13 +275,13 @@ const styles = StyleSheet.create({
       flexDirection: 'row',
       alignItems: 'center',
       marginBottom: 15,
-        
+       
     },
     totalCalories: {
        fontSize: 16,
        fontWeight: 'bold',
        marginRight: 5,
-        
+       
     },
      caloriesInput: {
         backgroundColor: '#D9D9D9',
