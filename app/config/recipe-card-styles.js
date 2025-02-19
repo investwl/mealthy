@@ -15,25 +15,48 @@ const styles = StyleSheet.create({
     height: 356,
   },
   title: {
-    fontSize: 24,
+    fontSize: 22,
     marginVertical: 10,
     marginHorizontal: 10,
     fontFamily: "PlusJakartaSans-Bold",
+    textAlign: "center", // Center the title
   },
+  
   iconsContainer: {
     flexDirection: "row",
     marginVertical: 10,
     paddingBottom: 10,
+    alignSelf: 'center',
   },
+  
   author: { 
     marginHorizontal: 10,
     fontSize: 16,
     fontFamily: "PlusJakartaSans-Regular",
+    textAlign: "left", // Center align the author
+    marginBottom: 15,
+  },
+
+  borderLine: {
+    borderBottomWidth: 1, 
+    borderBottomColor: '#000000', 
+    marginHorizontal: 0,
+    marginVertical: 5,
+    borderRadius: 0,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,  
+      height: 1, 
+    },
+    shadowOpacity: 1,
+    shadowRadius: 1, 
   },
   infoContainer: { 
     flexDirection: "row", 
     marginVertical: 10,
     marginHorizontal: 10,
+    marginTop: 15,
+    marginBottom: 20,
   },
   eta: {
     fontFamily: "PlusJakartaSans-Regular",
@@ -113,6 +136,9 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 16,
     fontFamily: "PlusJakartaSans-Regular",
+  },
+  scrollContainer: {
+    paddingBottom: 60,  
   },
 });
 
