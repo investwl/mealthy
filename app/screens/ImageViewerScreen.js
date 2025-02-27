@@ -4,6 +4,7 @@ import { View, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 
+
 export default function ImageViewerScreen({ route }) {
     const { imageUrl } = route.params;
     const navigation = useNavigation();
@@ -14,7 +15,8 @@ export default function ImageViewerScreen({ route }) {
 
     return (
         <View style={styles.container}>
-            <Image source={{ uri: imageUrl }} style={styles.image} resizeMode="contain" />
+            {/* PENTING: Tambahkan base URL */}
+            <Image source={{ uri: `http://localhost:5000${imageUrl}` }} style={styles.image} resizeMode="contain" />
             <TouchableOpacity style={styles.closeButton} onPress={handleClose}>
                 <Ionicons name="close-circle-outline" size={32} color="#fff" />
             </TouchableOpacity>

@@ -1,8 +1,9 @@
+// filepath: /c:/Cawu 4 - Software Engineering/mealthy/app/screens/3.1_MakePlannerPage.js
 import React, { useState } from 'react';
 import { View, TouchableWithoutFeedback, Text, TouchableOpacity, Platform, Image, SafeAreaView } from 'react-native';
 import { useFonts } from 'expo-font';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import DateTimePicker from '@react-native-community/datetimepicker'; 
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { useRoute } from '@react-navigation/native';
 import styles from '../styles/3.1_MakePlannerStyles';
 import Header from '../components/Header';
@@ -15,13 +16,9 @@ const MakePlannerPage = ({ navigation }) => {
     'PlusJakartaSans-Bold': require('../assets/fonts/Plus_Jakarta_Sans/static/PlusJakartaSans-Bold.ttf'),
   });
 
-  if (!fontsLoaded) {
-    return <View style={styles.loadingContainer}><Text>Loading...</Text></View>
-  }
-
   const route = useRoute();
   // Get the recipeImage passed from RecipeCard
-  const recipeImage = route.params?.recipeImage;
+  const { recipeImage } = route.params;
 
   const [date, setDate] = useState(new Date());
   const [showPicker, setShowPicker] = useState(false);
@@ -50,10 +47,13 @@ const MakePlannerPage = ({ navigation }) => {
   // Check if any meal is selected
   const isSubmitDisabled = !selectedMeal.breakfast && !selectedMeal.lunch && !selectedMeal.dinner;
 
+  if (!fontsLoaded) {
+    return <View style={styles.loadingContainer}><Text>Loading...</Text></View>
+  }
 
   return (
     <TouchableWithoutFeedback onPress={() => setShowPicker(false)}>
-      <SafeAreaView style={{display: 'flex', height:'100%'}}>
+      <SafeAreaView style={{ display: 'flex', height: '100%' }}>
         <View style={styles.container}>
           {/* Header with Back Button and Title */}
           <Header navigation={navigation} title="MEAL PLANNER" />
@@ -61,7 +61,7 @@ const MakePlannerPage = ({ navigation }) => {
           {/* Render the image received from RecipeCard above the date */}
           {recipeImage && (
             <View style={{ marginVertical: 20 }}>
-              <Image source={recipeImage} style={styles.mealImage} />
+              <Image source={{ uri: recipeImage }} style={styles.mealImage} />
             </View>
           )}
 
@@ -103,10 +103,10 @@ const MakePlannerPage = ({ navigation }) => {
                 ]}
                 onPress={() => toggleMeal('breakfast')}
               >
-                <Icon 
-                  name="clock" 
-                  size={20} 
-                  color={selectedMeal.breakfast ? "#FFF" : "#555"} 
+                <Icon
+                  name="clock"
+                  size={20}
+                  color={selectedMeal.breakfast ? "#FFF" : "#555"}
                 />
                 <Text
                   style={[
@@ -125,10 +125,10 @@ const MakePlannerPage = ({ navigation }) => {
                 ]}
                 onPress={() => toggleMeal('lunch')}
               >
-                <Icon 
-                  name="clock" 
-                  size={20} 
-                  color={selectedMeal.lunch ? "#FFF" : "#555"} 
+                <Icon
+                  name="clock"
+                  size={20}
+                  color={selectedMeal.lunch ? "#FFF" : "#555"}
                 />
                 <Text
                   style={[
@@ -147,10 +147,10 @@ const MakePlannerPage = ({ navigation }) => {
                 ]}
                 onPress={() => toggleMeal('dinner')}
               >
-                <Icon 
-                  name="clock" 
-                  size={20} 
-                  color={selectedMeal.dinner ? "#FFF" : "#555"} 
+                <Icon
+                  name="clock"
+                  size={20}
+                  color={selectedMeal.dinner ? "#FFF" : "#555"}
                 />
                 <Text
                   style={[

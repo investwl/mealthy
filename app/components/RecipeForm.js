@@ -1,19 +1,16 @@
+// components/RecipeForm.js
 import React, { useState, useMemo } from 'react';
 import { View, TextInput, TouchableOpacity, Text, StyleSheet, ScrollView, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 
-export default function RecipeForm({ onPost, onRemove }) {
+export default function RecipeForm({ onPost, onRemove, userData }) { //  <--  Terima userData
     const [title, setTitle] = useState('');
     const [ingredients, setIngredients] = useState([{ id: 1, name: '', weight: '' }]);
     const [instructions, setInstructions] = useState([{ id: 1, text: '' }]);
     const [calories, setCalories] = useState(''); // Added state for calories
 
-
-     // Static user data (replace with actual user data in a real app)
-    const profileImage = null; // You might want to show a default icon if there is no profile picture.
-
-
+    const baseUrl = "http://localhost:5000";
     const addIngredient = () => {
         setIngredients([...ingredients, { id: ingredients.length + 1, name: '', weight: '' }]);
     };
@@ -54,8 +51,8 @@ export default function RecipeForm({ onPost, onRemove }) {
         <View style={styles.container}>
             {/* Title and Profile Icon */}
             <View style={styles.titleContainer}>
-                {profileImage ? (
-                    <Image source={{ uri: profileImage }} style={styles.profileImage} />
+                {userData && userData.profileImage ? ( //  <--  Conditional rendering
+                    <Image source={{ uri: baseUrl + userData.profileImage }} style={styles.profileImage} />
                 ) : (
                     <Ionicons name="person-circle-outline" size={24} color="#000" />
                 )}
@@ -192,10 +189,11 @@ const styles = StyleSheet.create({
          alignItems: 'center',
         marginBottom: 10,
         },
-        profileImage: {
-        width: 24,
-        height: 24,
-        marginRight: 5,
+        profileImage: {  //  <--  Tambahkan borderRadius di sini
+          width: 24,       //  Sesuaikan ukuran jika perlu
+          height: 24,      //  Sesuaikan ukuran jika perlu
+          marginRight: 5,
+          borderRadius: 12, //  Setengah dari width dan height agar menjadi lingkaran
     },
       titleInput: {
          borderBottomWidth: 1,

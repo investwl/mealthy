@@ -1,65 +1,71 @@
+// screens/RecipeDetailScreen.js
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, SafeAreaView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native'; // Tambahkan useRoute
 
-export default function RecipeDetailScreen({ route }) {
-    const { recipe } = route.params;
-    // Static user data (replace with actual user data in a real app)
-    const username = "Mie";
-    const userHandle = "@bakmielovers";
-    const profileImage = null; // You might want to show a default icon if there is no profile picture.
+export default function RecipeDetailScreen({ route }) { //  <--  Gunakan route prop
+    // const { recipe } = route.params; //  <--  Tidak hanya recipe, tapi juga user
+    const { recipe, user } = route.params; //  Ambil data recipe dan user
     const navigation = useNavigation();
+     const baseUrl = "http://localhost:5000";
 
     const handleBack = () => {
         navigation.goBack();
     };
 
     return (
-        <ScrollView style={styles.scrollViewContainer} contentContainerStyle={styles.scrollContentContainer} showsVerticalScrollIndicator={false}>
-        <View style={styles.container}>
-          <View style={styles.headerContainer}>
-              {/* User Info */}
-            <View style={styles.userInfo}>
-                {profileImage ? (
-                    <Image source={{ uri: profileImage }} style={styles.profileImage} />
-                ) : (
-                    <Ionicons name="person-circle-outline" size={28} color="#000" />
-                )}
-                <View style={styles.usernameHandleContainer}>
-                    <Text style={styles.username}>{username}</Text>
-                    <Text style={styles.userHandle}>
-                        {userHandle}
-                    </Text>
+        <SafeAreaView style={styles.containersafe}>
+            <ScrollView style={styles.scrollViewContainer} contentContainerStyle={styles.scrollContentContainer} showsVerticalScrollIndicator={false}>
+            <View style={styles.container}>
+            <View style={styles.headerContainer}>
+                {/* User Info */}
+                <View style={styles.userInfo}>
+                    {user && user.profileImage ? ( //  <--  Conditional rendering
+                        <Image source={{ uri: baseUrl + user.profileImage }} style={styles.profileImage} />
+                    ) : (
+                        <Ionicons name="person-circle-outline" size={28} color="#000" />
+                    )}
+                    <View style={styles.usernameHandleContainer}>
+                        <Text style={styles.username}>{user ? `${user.firstName} ${user.lastName}` : 'Unknown User'}</Text>
+                        <Text style={styles.userHandle}>
+                            {user ? `${user.username}` : ''}
+                        </Text>
+                    </View>
                 </View>
-             </View>
-          </View>
+            </View>
 
-          <View style={styles.contentContainer}>
-            <Text style={styles.title}>{recipe.title}
-                  {recipe.calories ? ` (${recipe.calories} kkal)` : ''}
-                </Text>
-             <Text style={styles.sectionTitle}>Ingredients</Text>
-                  {recipe.ingredients.map((item, index) => {
-                        const [ingredient, weight] = item.split(" - ");
-                          return(
-                           <View key={index} style={styles.ingredientRow}>
-                                 <Text style={styles.ingredientText}>{ingredient}</Text>
-                                <Text style={styles.weightText}>{weight}</Text>
-                            </View>
-                         );
-                       })}
-                     <Text style={styles.sectionTitle}>Instructions</Text>
-                      {recipe.instructions.map((item, index) => (
-                            <Text key={index} style={styles.instructionText}>{index + 1}. {item}</Text>
-                        ))}
-          </View>
-         </View>
-         </ScrollView>
+
+            <View style={styles.contentContainer}>
+                <Text style={styles.title}>{recipe.title}
+                    {recipe.calories ? ` (${recipe.calories} kkal)` : ''}
+                    </Text>
+                <Text style={styles.sectionTitle}>Ingredients</Text>
+                    {recipe.ingredients.map((item, index) => {
+                            const [ingredient, weight] = item.split(" - ");
+                            return(
+                            <View key={index} style={styles.ingredientRow}>
+                                    <Text style={styles.ingredientText}>{ingredient}</Text>
+                                    <Text style={styles.weightText}>{weight}</Text>
+                                </View>
+                            );
+                        })}
+                        <Text style={styles.sectionTitle}>Instructions</Text>
+                        {recipe.instructions.map((item, index) => (
+                                <Text key={index} style={styles.instructionText}>{index + 1}. {item}</Text>
+                            ))}
+            </View>
+            </View>
+            </ScrollView>
+        </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+    containersafe:{
+        flex:1,
+        height:'100%',
+    },
     scrollViewContainer: {
         flex: 1,
     },

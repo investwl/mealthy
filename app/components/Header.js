@@ -11,7 +11,7 @@ const Header = ({ title }) => {
       <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
         <Icon name="arrow-left" size={24} color="#000" />
       </TouchableOpacity>
-      <Text style={styles.title}>{title}</Text>
+      <Text style={styles.title}>COMMUNITY{title}</Text>
     </View>
   );
 };
