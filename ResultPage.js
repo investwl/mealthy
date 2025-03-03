@@ -13,7 +13,7 @@ import FishIcon from './assets/fish.png';
 import CrustaceanIcon from './assets/shrimp.png';
 import WheatIcon from './assets/wheat.png';
 import GlutenIcon from './assets/gluten.png';
-import { OCR_API_KEY } from '@env';
+import { OCR_API_KEY, NGROK_URL } from '@env';
 import axios from 'axios';
 
 const ResultPage = ({ route, navigation }) => {
@@ -21,19 +21,20 @@ const ResultPage = ({ route, navigation }) => {
   const [recognizedText, setRecognizedText] = useState(null);
   const [detectedAllergens, setDetectedAllergens] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [allergenDatabase, setAllergenDatabase] = useState([]);
 
-  // Dummy allergen data
-  const allergenDatabase = [
-    { name: "Milk", keywords: ["milk", "dairy", "whey", "casein", "lactose"] },
-    { name: "Egg", keywords: ["egg", "albumin"] },
-    { name: "Peanut", keywords: ["peanut", "nuts"] },
-    { name: "Nut", keywords: ["almond", "cashew", "walnut", "pecan"] },
-    { name: "Soy", keywords: ["soy", "soybean", "tofu", "edamame"] },
-    { name: "Fish", keywords: ["fish", "anchovies", "sardines", "tuna", "salmon"] },
-    { name: "Shellfish", keywords: ["shellfish", "shrimp", "crab", "lobster", "oyster"] },
-    { name: "Wheat", keywords: ["wheat", "flour", "bread", "pasta"] },
-    { name: "Gluten", keywords: ["gluten", "wheat", "barley", "rye"] },
-  ];
+  // // Dummy allergen data
+  // const allergenDatabase = [
+  //   { name: "Milk", keywords: ["milk", "dairy", "whey", "casein", "lactose"] },
+  //   { name: "Egg", keywords: ["egg", "albumin"] },
+  //   { name: "Peanut", keywords: ["peanut", "nuts"] },
+  //   { name: "Nut", keywords: ["almond", "cashew", "walnut", "pecan"] },
+  //   { name: "Soy", keywords: ["soy", "soybean", "tofu", "edamame"] },
+  //   { name: "Fish", keywords: ["fish", "anchovies", "sardines", "tuna", "salmon"] },
+  //   { name: "Shellfish", keywords: ["shellfish", "shrimp", "crab", "lobster", "oyster"] },
+  //   { name: "Wheat", keywords: ["wheat", "flour", "bread", "pasta"] },
+  //   { name: "Gluten", keywords: ["gluten", "wheat", "barley", "rye"] },
+  // ];
 
   const userAllergies = ["Milk"];  // Example user allergies
 
@@ -57,14 +58,14 @@ const ResultPage = ({ route, navigation }) => {
             const apiUrl = `https://api.ocr.space/parse/image`;
             const formData = new FormData();
             formData.append('base64Image', `data:image/jpeg;base64,${base64}`);
-            formData.append('apikey', OCR_API_KEY); // Menggunakan OCR_API_KEY dari .env
+            formData.append('apikey', OCR_API_KEY); // OCR_API_KEY from .env
             formData.append('language', 'eng');
             formData.append('isOverlayRequired', 'false');
 
 
-            const response = await axios.post(apiUrl, formData, { // Menggunakan axios untuk POST request
+            const response = await axios.post(apiUrl, formData, {
                 headers: {
-                    'Content-Type': 'multipart/form-data', // Set Content-Type untuk FormData
+                    'Content-Type': 'multipart/form-data',
                 },
             });
 
@@ -91,6 +92,20 @@ const ResultPage = ({ route, navigation }) => {
     }
   }, [photoUri]);
 
+  useEffect(() => {
+    // Function to fetch allergen data from the backend
+    const fetchAllergies = async () => {
+      try {
+        const response = await axios.get(`${NGROK_URL}/allergies`);
+        setAllergenDatabase(response.data);
+      } catch (error) {
+        console.error('Error fetching allergies:', error);
+      }
+    };
+
+    fetchAllergies(); // Call the function to fetch allergies when the component mounts
+  }, []);
+
 
   useEffect(() => {
     const analyzeTextForAllergens = () => {
@@ -98,22 +113,25 @@ const ResultPage = ({ route, navigation }) => {
         const lowerCaseText = recognizedText.toLowerCase();
         const foundAllergens = [];
 
-        allergenDatabase.forEach(allergen => {
-          allergen.keywords.forEach(keyword => {
-            if (lowerCaseText.includes(keyword)) {
-              if (!foundAllergens.includes(allergen.name)) {
-                foundAllergens.push(allergen.name);
-              }
+        if (allergenDatabase && Array.isArray(allergenDatabase)) {  // Check if allergenDatabase is defined and is an array
+          allergenDatabase.forEach(allergen => {
+            if (allergen && allergen.name && Array.isArray(allergen.name)){  // Check if allergen.name exists and if it is an array
+              allergen.name.forEach(keyword => {
+                if (lowerCaseText.includes(keyword)) {
+                  if (!foundAllergens.includes(allergen.allergy_id)) {
+                    foundAllergens.push(allergen.allergy_id);
+                  }
+                }
+              });
             }
           });
-        });
-
+        }
         setDetectedAllergens(foundAllergens);
       }
     };
 
     analyzeTextForAllergens();
-  }, [recognizedText]);
+  }, [recognizedText, allergenDatabase]);
 
   const isSafe = detectedAllergens.every(
     (allergen) => !userAllergies.includes(allergen)
