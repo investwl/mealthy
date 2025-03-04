@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import {
   View,
   Text,
@@ -14,11 +14,13 @@ import {
   Platform,
   StyleSheet,
   ImageBackground,
-  ScrollView,
 } from 'react-native';
 import Header from '../components/Header';
 import BottomNavigation from '../components/BottomNavigation';
+import { UserContext } from '../config/UserContext'; 
 import axios from 'axios';
+import { useRoute } from '@react-navigation/native';
+import { NGROK_URL } from "@env"; // Import NGROK_URL
 
 const CaloriePage = ({ navigation }) => {
   const [selectedFood, setSelectedFood] = useState('');
@@ -32,78 +34,41 @@ const CaloriePage = ({ navigation }) => {
   const [diaryEntries, setDiaryEntries] = useState([]);
   const [isModalVisible, setModalVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  // const [foodData, setFoodData] = useState([]);
+  const [foodData, setFoodData] = useState([]);
+  // const route = useRoute();
+  // const { user_id } = route.params; 
+  const {userId} = useContext(UserContext);
 
-  // useEffect(() => {
-  //   // Fetch food data from the local API
-  //   axios
-  //     .get('http://localhost:5000/api/foods') // Replace with your actual API URL
-  //     .then((response) => {
-  //       setFoodData(response.data);
-  //       if (response.data.length > 0) {
-  //         setSelectedFood(response.data[0].name); // Set initial food selection
-  //       }
-  //     })
-  //     .catch((error) => {
-  //       console.error('Error fetching food data:', error);
-  //     });
-  // }, []);
+  useEffect(() => {
+    // Fetch food data from the local API
+    const fetchFoods = async () => {
+      try {
+        const response = await axios.get(`${NGROK_URL}/api/foods`); // Replace with your actual API URL
+        setFoodData(response.data);
+        if (response.data.length > 0) {
+          setSelectedFood(response.data[0].name); // Set initial food selection
+        }
+      } catch (error) {
+        console.error('Error fetching food data:', error);
+        // Handle error (e.g., display an error message)
+      }
+    };
 
-  // Dummy food data
-  const foodData = [
-    { name: 'Apple', calories: 52, fat: 0.2, protein: 0.3, carbs: 14, fiber: 2.4 },
-    { name: 'Banana', calories: 89, fat: 0.3, protein: 1.1, carbs: 23, fiber: 2.6 },
-    { name: 'Orange', calories: 43, fat: 0.1, protein: 1, carbs: 11, fiber: 2.4 },
-    { name: 'Strawberry', calories: 32, fat: 0.3, protein: 0.7, carbs: 7.7, fiber: 2.0 },
-    { name: 'Pizza', calories: 285, fat: 10, protein: 12, carbs: 36, fiber: 2.5 },
-    { name: 'Burger', calories: 295, fat: 12, protein: 16, carbs: 34, fiber: 2.0 },
-    { name: 'Salad', calories: 150, fat: 12, protein: 5, carbs: 20, fiber: 4.0 },
-    { name: 'Ice Cream', calories: 207, fat: 11, protein: 3.5, carbs: 24, fiber: 0.0 },
-    { name: 'Pasta', calories: 131, fat: 1.1, protein: 5.1, carbs: 25, fiber: 3.0 },
-    { name: 'Chicken Breast (cooked)', calories: 165, fat: 3.6, protein: 31, carbs: 0, fiber: 0.0 },
-    { name: 'Rice', calories: 130, fat: 0.3, protein: 2.7, carbs: 28, fiber: 0.4 },
-    { name: 'Milk', calories: 103, fat: 2.4, protein: 8.1, carbs: 12, fiber: 0.0 },
-    { name: 'Almonds', calories: 576, fat: 49, protein: 21, carbs: 22, fiber: 12.2 },
-    { name: 'Salmon', calories: 208, fat: 13, protein: 20, carbs: 0, fiber: 0.0 },
-    { name: 'Broccoli', calories: 55, fat: 0.6, protein: 3.7, carbs: 11, fiber: 5.1 },
-    { name: 'Spinach', calories: 23, fat: 0.4, protein: 2.9, carbs: 3.6, fiber: 2.2 },
-    { name: 'Egg', calories: 155, fat: 11, protein: 13, carbs: 1.1, fiber: 0.0 },
-    { name: 'Yogurt', calories: 59, fat: 3.3, protein: 10, carbs: 3.6, fiber: 0.0 },
-    { name: 'Avocado', calories: 160, fat: 15, protein: 2, carbs: 9, fiber: 7.0 },
-    { name: 'Carrot', calories: 41, fat: 0.2, protein: 0.9, carbs: 9.6, fiber: 2.8 },
-    { name: 'Cucumber', calories: 16, fat: 0.1, protein: 0.7, carbs: 3.6, fiber: 0.5 },
-    { name: 'Tomato', calories: 18, fat: 0.2, protein: 0.9, carbs: 3.9, fiber: 1.2 },
-    { name: 'Lentils', calories: 116, fat: 0.4, protein: 9, carbs: 20, fiber: 7.9 },
-    { name: 'Quinoa', calories: 120, fat: 1.9, protein: 4.1, carbs: 21, fiber: 2.8 },
-    { name: 'Sweet Potato', calories: 86, fat: 0.1, protein: 1.6, carbs: 20, fiber: 3.0 },
-    { name: 'Cottage Cheese', calories: 98, fat: 4.3, protein: 11, carbs: 3.4, fiber: 0.0 },
-    { name: 'Tuna (canned in water)', calories: 132, fat: 0.6, protein: 28, carbs: 0, fiber: 0.0 },
-    { name: 'Oatmeal', calories: 71, fat: 1.4, protein: 2.5, carbs: 12, fiber: 1.7 },
-    { name: 'Chia Seeds', calories: 486, fat: 31, protein: 17, carbs: 42, fiber: 34.4 },
-    { name: 'Chickpeas', calories: 164, fat: 2.6, protein: 8.9, carbs: 27, fiber: 7.6 },
-    { name: 'Peanut Butter', calories: 588, fat: 50, protein: 25, carbs: 20, fiber: 6.0 },
-    { name: 'BBQ Chicken', calories: 200, fat: 8, protein: 30, carbs: 14, fiber: 1.5 },
-    { name: 'Buffalo Wings', calories: 500, fat: 30, protein: 40, carbs: 10, fiber: 1.5 },
-    { name: 'Chicken Alfredo', calories: 450, fat: 20, protein: 35, carbs: 30, fiber: 4.0 },
-    { name: 'Chicken Biryani', calories: 400, fat: 18, protein: 30, carbs: 50, fiber: 5.0 },
-    { name: 'Chicken Burrito', calories: 500, fat: 22, protein: 32, carbs: 45, fiber: 7.0 },
-    { name: 'Chicken Caesar Salad', calories: 450, fat: 30, protein: 34, carbs: 16, fiber: 3.0 },
-    { name: 'Chicken Cordon Bleu', calories: 433, fat: 27, protein: 31, carbs: 20, fiber: 0.5 },
-    { name: 'Chicken Fajitas', calories: 350, fat: 12, protein: 32, carbs: 30, fiber: 5.0 },
-    { name: 'Chicken Nuggets', calories: 250, fat: 15, protein: 15, carbs: 18, fiber: 2.5 },
-    { name: 'Chicken Parmesan', calories: 400, fat: 18, protein: 30, carbs: 35, fiber: 4.0 },
-    { name: 'Chicken Pot Pie', calories: 450, fat: 22, protein: 24, carbs: 38, fiber: 3.5 },
-    { name: 'Chicken Quesadilla', calories: 400, fat: 20, protein: 30, carbs: 30, fiber: 2.0 },
-    { name: 'Chicken Shawarma', calories: 410, fat: 22, protein: 30, carbs: 25, fiber: 3.0 },
-    { name: 'Chicken Soup', calories: 150, fat: 6, protein: 18, carbs: 15, fiber: 2.0 },
-    { name: 'Chicken Stir Fry', calories: 290, fat: 10, protein: 28, carbs: 25, fiber: 3.5 },
-    { name: 'Chicken Tikka Masala', calories: 300, fat: 18, protein: 24, carbs: 20, fiber: 3.0 },
-    { name: 'Chicken Wings', calories: 400, fat: 25, protein: 30, carbs: 10, fiber: 1.0 },
-    { name: 'Fried Chicken', calories: 300, fat: 16, protein: 23, carbs: 20, fiber: 2.0 },
-    { name: 'Grilled Chicken', calories: 165, fat: 3.6, protein: 31, carbs: 0, fiber: 0.0 },
-    { name: 'Roast Chicken', calories: 220, fat: 9, protein: 28, carbs: 0, fiber: 0.0 },
-    { name: 'Turkey Breast', calories: 135, fat: 1, protein: 30, carbs: 0, fiber: 0.0 },
-  ];
+    const fetchCalorieLogs = async () => {
+      try {
+          const logResponse = await axios.get(`${NGROK_URL}/api/calorie_log`, {
+              // params: { user_id: user_id }
+              params: { user_id: userId }
+          });
+          setDiaryEntries(logResponse.data);
+      } catch (error) {
+          console.error("Error fetching calorie log entries:", error);
+      }
+  };
+
+    fetchFoods();
+    fetchCalorieLogs();
+  }, []);
 
   // Handle food selection from dropdown
   const handleFoodSelection = (foodName) => {
@@ -115,44 +80,73 @@ const CaloriePage = ({ navigation }) => {
     setPortionSize(text);
   };
 
-  const getNutrients = () => {
-    const food = foodData.find(
-      (item) => item.name.toLowerCase() === selectedFood.toLowerCase()
-    );
+  const getNutrients = async () => {
+    try {
+      // Fetch the selected food item by name from the server
+      const response = await axios.get(`${NGROK_URL}/api/foods/name/${selectedFood}`);
+      const food = response.data;
 
-    if (food && portionSize) {
-      const portionFactor = parseFloat(portionSize) / 100; // assuming food data is for 100g portions
-      const caloriesForPortion = food.calories * portionFactor;
-      const fatForPortion = food.fat * portionFactor;
-      const proteinForPortion = food.protein * portionFactor;
+      if (food && portionSize) {
+        const portionFactor = parseFloat(portionSize) / 100; // assuming food data is for 100g portions
+        const caloriesForPortion = food.calories * portionFactor;
+        const fatForPortion = food.fat * portionFactor;
+        const proteinForPortion = food.protein * portionFactor;
 
-      // Update current food nutrients
-      setCalories(caloriesForPortion);
-      setFat(fatForPortion);
-      setProtein(proteinForPortion);
+        // Update current food nutrients
+        setCalories(caloriesForPortion);
+        setFat(fatForPortion);
+        setProtein(proteinForPortion);
 
-      // Update total nutrients
-      setTotalCalories((prev) => prev + caloriesForPortion);
-      setTotalFat((prev) => prev + fatForPortion);
-      setTotalProtein((prev) => prev + proteinForPortion);
+        // Update total nutrients
+        setTotalCalories((prev) => prev + caloriesForPortion);
+        setTotalFat((prev) => prev + fatForPortion);
+        setTotalProtein((prev) => prev + proteinForPortion);
 
-      // Get current date for the diary entry
-      const currentDate = new Date().toLocaleDateString();
+        // Get current date for the diary entry
+        const currentDate = new Date().toLocaleDateString();
 
-      // Save the entry to the diary container with the date
-      setDiaryEntries([
-        ...diaryEntries,
-        {
-          food: food.name,
-          portion: portionSize,
-          calories: caloriesForPortion.toFixed(2),
-          fat: fatForPortion.toFixed(2),
-          protein: proteinForPortion.toFixed(2),
-          date: currentDate,
-        },
-      ]);
-    } else {
-      alert('Please provide a valid portion size!');
+        //  SAVE TO DATABASE
+        const logDate = new Date().toISOString().split('T')[0]; // Format date as YYYY-MM-DD
+        const calorieLogEntry = {
+          // user_id: user_id, 
+          user_id: userId, 
+          food_id: food.food_id,
+          serving_size: portionSize,
+          log_date: logDate,
+        };
+
+        try {
+          const logResponse = await axios.post(`${NGROK_URL}/api/calorie_log`, calorieLogEntry);
+          console.log("Calorie log entry saved:", logResponse.data);
+
+          // Re-fetch calorie logs after adding a new entry
+          const logEntriesResponse = await axios.get(`${NGROK_URL}/api/calorie_log`, {
+            // params: { user_id: user_id }
+            params: { user_id: userId }
+          });
+          setDiaryEntries(logEntriesResponse.data);
+          // Optionally, update UI to indicate successful save (e.g., show a message)
+        } catch (logError) {
+          console.error("Error saving calorie log entry:", logError);
+          // Handle error (e.g., show an error message to the user)
+        }
+        setDiaryEntries([
+          ...diaryEntries,
+          {
+            food: food.name,
+            portion: portionSize,
+            calories: caloriesForPortion.toFixed(2),
+            fat: fatForPortion.toFixed(2),
+            protein: proteinForPortion.toFixed(2),
+            date: currentDate,
+          },
+        ]);
+      } else {
+        alert('Please provide a valid portion size!');
+      }
+    } catch (error) {
+      console.error('Error fetching or processing food data:', error);
+      alert('Failed to get nutrients. Please try again.');
     }
   };
 
@@ -180,158 +174,168 @@ const CaloriePage = ({ navigation }) => {
     </View>
   );
 
+  const renderItem = ({ item }) => {
+    if (item.type === 'nutrientInput') {
+      return (
+        <View style={{ padding: 30 }}>
+          {/* Total Nutrients Display */}
+          <View style={styles.nutrientcontainer}>
+            <View style={styles.totalCaloriesContainer}>
+              <Text style={styles.totalCaloriesText}>
+                Total Calories: {totalCalories.toFixed(2)}
+              </Text>
+              <Text style={styles.totalCaloriesText}>
+                Total Fat: {totalFat.toFixed(2)} g
+              </Text>
+              <Text style={styles.totalCaloriesText}>
+                Total Protein: {totalProtein.toFixed(2)} g
+              </Text>
+            </View>
+          </View>
+
+          {/* Food Selection and Portion Input */}
+          <View style={styles.inputcontainer}>
+            <View
+              style={{
+                padding: 10,
+                backgroundColor: '#FFFBE2',
+                borderTopLeftRadius: 10,
+                borderTopRightRadius: 10,
+                borderBottomWidth: 3,
+              }}
+            >
+              <Text style={styles.title}>Enter Your Food and Portion</Text>
+            </View>
+
+            <View style={{ padding: 20 }}>
+              <TouchableOpacity
+                onPress={() => setModalVisible(true)}
+                style={styles.selector}
+              >
+                <Text style={styles.selectorText}>{selectedFood}</Text>
+              </TouchableOpacity>
+
+              <Modal
+                visible={isModalVisible}
+                animationType="slide"
+                onRequestClose={() => setModalVisible(false)}
+              >
+                <SafeAreaView style={{ backgroundColor: 'white', flex: 1 }}>
+                  <View style={styles.modalContainer}>
+                    <TextInput
+                      style={styles.searchInput}
+                      placeholder="Search for food..."
+                      value={searchQuery}
+                      onChangeText={setSearchQuery}
+                    />
+                    <FlatList
+                      data={filteredFoodData}
+                      keyExtractor={(item) => item.food_id.toString()}
+                      renderItem={({ item }) => (
+                        <TouchableOpacity
+                          style={styles.modalItem}
+                          onPress={() => handleFoodSelection(item.name)}
+                        >
+                          <Text style={styles.modalItemText}>{item.name}</Text>
+                        </TouchableOpacity>
+                      )}
+                      style={{ flex: 1 }}
+                    />
+                    <Button title="Close" onPress={() => setModalVisible(false)} />
+                  </View>
+                </SafeAreaView>
+              </Modal>
+
+              <TextInput
+                style={styles.input}
+                placeholder="Enter portion size (grams)"
+                keyboardType="numeric"
+                value={portionSize}
+                onChangeText={handlePortionChange}
+              />
+            </View>
+          </View>
+
+          <View style={{ alignItems: 'center', alignSelf: 'center' }}>
+            {/* Add Food Button */}
+            <TouchableOpacity
+              style={[styles.button, styles.addButton]}
+              onPress={getNutrients}
+            >
+              <Text style={styles.buttonText}>Add Food</Text>
+            </TouchableOpacity>
+
+            {/* Clear All Button */}
+            <TouchableOpacity
+              style={[styles.button, styles.deleteButton]}
+              onPress={clearAll}
+            >
+              <Text style={styles.buttonText}>Clear All</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      );
+    } else if (item.type === 'diaryEntries') {
+      return (
+        <View style={styles.diarycontainer}>
+          <View style={styles.diaryEntryContainer}>
+            <Text style={styles.diaryTitle}>Diary Entries : </Text>
+            <ImageBackground
+              source={require('../assets/flame.png')}
+              style={{ flex: 0.8 }}
+              resizeMode="contain"
+            >
+              <FlatList
+                data={diaryEntries}
+                renderItem={renderDiaryEntry}
+                keyExtractor={(item, index) => index.toString()}
+                style={styles.diaryList}
+              />
+            </ImageBackground>
+          </View>
+        </View>
+      );
+    }
+    return null; // Handle other item types if needed
+  };
+
+  const flatListData = [
+    { type: 'nutrientInput', id: 'nutrientInput' }, // Unique id is required
+    { type: 'diaryEntries', id: 'diaryEntries' }, // Unique id is required
+  ];
+
   return (
     <View style={{ flex: 1 }}>
       <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
         <Header navigation={navigation} title="Calorie Counter" />
-  
-        {/* Main Content Area */}
-        <ScrollView>
-          
-          <KeyboardAvoidingView
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            style={{ flex: 1 }}
-          >
-            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-              <View style={{ flex: 1 }}>
-    
-                {/* Top Part - Nutrients Display and Inputs */}
-                <View style={{ padding: 30 }}>
-                  {/* Total Nutrients Display */}
-                  <View style={styles.nutrientcontainer}>
-                    <View style={styles.totalCaloriesContainer}>
-                      <Text style={styles.totalCaloriesText}>
-                        Total Calories: {totalCalories.toFixed(2)}
-                      </Text>
-                      <Text style={styles.totalCaloriesText}>
-                        Total Fat: {totalFat.toFixed(2)} g
-                      </Text>
-                      <Text style={styles.totalCaloriesText}>
-                        Total Protein: {totalProtein.toFixed(2)} g
-                      </Text>
-                    </View>
-                  </View>
-    
-                  {/* Food Selection and Portion Input */}
-                  <View style={styles.inputcontainer}>
-                    <View
-                      style={{
-                        padding: 10,
-                        backgroundColor: '#FFFBE2',
-                        borderTopLeftRadius: 10,
-                        borderTopRightRadius: 10,
-                        borderBottomWidth: 3,
-                      }}
-                    >
-                      <Text style={styles.title}>Enter Your Food and Portion</Text>
-                    </View>
-    
-                    <View style={{ padding: 20 }}>
-                      <TouchableOpacity
-                        onPress={() => setModalVisible(true)}
-                        style={styles.selector}
-                      >
-                        <Text style={styles.selectorText}>{selectedFood}</Text>
-                      </TouchableOpacity>
-    
-                      <Modal
-                        visible={isModalVisible}
-                        animationType="slide"
-                        onRequestClose={() => setModalVisible(false)}
-                      >
-                        <SafeAreaView style={{ backgroundColor: 'white', flex: 1 }}>
-                          <View style={styles.modalContainer}>
-                            <TextInput
-                              style={styles.searchInput}
-                              placeholder="Search for food..."
-                              value={searchQuery}
-                              onChangeText={setSearchQuery}
-                            />
-                            <FlatList
-                              data={filteredFoodData}
-                              keyExtractor={(item) => item.name}
-                              renderItem={({ item }) => (
-                                <TouchableOpacity
-                                  style={styles.modalItem}
-                                  onPress={() => handleFoodSelection(item.name)}
-                                >
-                                  <Text style={styles.modalItemText}>{item.name}</Text>
-                                </TouchableOpacity>
-                              )}
-                              style={{ flex: 1 }}
-                            />
-                            <Button title="Close" onPress={() => setModalVisible(false)} />
-                          </View>
-                        </SafeAreaView>
-                      </Modal>
-    
-                      <TextInput
-                        style={styles.input}
-                        placeholder="Enter portion size (grams)"
-                        keyboardType="numeric"
-                        value={portionSize}
-                        onChangeText={handlePortionChange}
-                      />
-                    </View>
-                  </View>
-    
-                  <View style={{ alignItems: 'center', alignSelf: 'center' }}>
-                    {/* Add Food Button */}
-                    <TouchableOpacity
-                      style={[styles.button, styles.addButton]}
-                      onPress={getNutrients}
-                    >
-                      <Text style={styles.buttonText}>Add Food</Text>
-                    </TouchableOpacity>
-    
-                    {/* Clear All Button */}
-                    <TouchableOpacity
-                      style={[styles.button, styles.deleteButton]}
-                      onPress={clearAll}
-                    >
-                      <Text style={styles.buttonText}>Clear All</Text>
-                    </TouchableOpacity>
-                  </View>
-                </View>
-    
-                {/* Display Diary Entries - Make this part scrollable */}
-                <View style={styles.diarycontainer}>
-                  <View style={styles.diaryEntryContainer}>
-                    <Text style={styles.diaryTitle}>Diary Entries : </Text>
-                    <ImageBackground
-                      source={require('../assets/flame.png')}
-                      style={{ flex: 0.8 }}
-                      resizeMode="contain"
-                    >
-                      <FlatList
-                        data={diaryEntries}
-                        renderItem={renderDiaryEntry}
-                        keyExtractor={(item, index) => index.toString()}
-                        style={styles.diaryList}
-                      />
-                    </ImageBackground>
-                  </View>
-                </View>
-              </View>
-            </TouchableWithoutFeedback>
-          </KeyboardAvoidingView>
-        </ScrollView>
+
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={{ flex: 1 }}
+        >
+          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <FlatList
+              data={flatListData}
+              renderItem={renderItem}
+              keyExtractor={(item) => item.id}
+              style={{ flex: 1 }}
+            />
+          </TouchableWithoutFeedback>
+        </KeyboardAvoidingView>
         <BottomNavigation navigation={navigation} />
       </SafeAreaView>
     </View>
   );
-  
-}  
+};
 
 const styles = StyleSheet.create({
-  
   tophat : {
     backgroundColor: '#C0C78C',
     height: '10%',
     maxHeight: 80,
     alignItems: 'center',
     justifyContent: 'center',
-    
+
   },
   texttop: {
     fontSize: 20,
@@ -413,7 +417,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     width: '90%',
   },
-  
+
   button: {
     backgroundColor: '#007AFF', // Default background color (iOS blue)
     paddingVertical: 10,
@@ -441,7 +445,7 @@ const styles = StyleSheet.create({
 
   diarycontainer:{
     marginTop: '5%',
-    padding: '10',  
+    padding: '10',
     backgroundColor: '#C0C78C',
     minHeight: '50%',
     width: '100%',

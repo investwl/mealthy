@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, Modal, SafeAreaView } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Header from '../components/Header';
 import BottomNavigation from '../components/BottomNavigation';
 import { useFonts } from 'expo-font';
-import styles from '../styles/6_MyProfileStyles'
+import styles from '../styles/6_MyProfileStyles';
+// import { useRoute } from '@react-navigation/native';
+import { UserContext } from '../config/UserContext';
 
 const MyProfileScreen = ({ navigation }) => {
   const [fontsLoaded] = useFonts({
@@ -13,6 +15,9 @@ const MyProfileScreen = ({ navigation }) => {
     'PlusJakartaSans-Bold': require('../assets/fonts/Plus_Jakarta_Sans/static/PlusJakartaSans-Bold.ttf'),
   });
   const [modalVisible, setModalVisible] = useState(false);
+  // const route = useRoute();
+  // const { user_id } = route.params;
+  const {userId} = useContext(UserContext);
 
   return (
     <SafeAreaView style={styles.containersafe}>
@@ -28,7 +33,7 @@ const MyProfileScreen = ({ navigation }) => {
             />
           </TouchableOpacity>
           <Text style={styles.name}>Yehezkiel Michael Sutara</Text>
-          <TouchableOpacity style={styles.editButton} onPress={() => navigation.navigate('EditProfile')}>
+          <TouchableOpacity style={styles.editButton} onPress={() => navigation.navigate('EditProfile', {user_id : userId})}>
             <Text style={styles.editButtonText}>Edit Profile</Text>
           </TouchableOpacity>
         </View>
@@ -77,7 +82,7 @@ const MyProfileScreen = ({ navigation }) => {
           ))}
         </View>
       </View>
-      <BottomNavigation navigation={navigation} />
+      <BottomNavigation navigation={navigation} user_id={userId}/>
     </SafeAreaView>
   );
 };

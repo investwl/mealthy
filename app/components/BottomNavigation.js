@@ -1,10 +1,12 @@
-import React from 'react';
+import React, {useContext} from 'react';
+import {UserContext} from '../config/UserContext';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation } from '@react-navigation/native'; // Remove useRoute
 
-const BottomNavigation = ({ activeRouteName }) => { // Receive prop
+const BottomNavigation = ({ activeRouteName}) => { // Receive prop
   const navigation = useNavigation();
+  const {userId} = useContext(UserContext);
 
   const menuItems = [
     { name: 'Recipes', icon: 'chef-hat', screen: 'Recipe' },
@@ -23,7 +25,7 @@ const BottomNavigation = ({ activeRouteName }) => { // Receive prop
           <TouchableOpacity
             key={index}
             style={[styles.navItem, isActive && styles.activeNavItem]}
-            onPress={() => navigation.navigate(item.screen)}
+            onPress={() => navigation.navigate(item.screen, {user_id: userId})}
           >
             <View style={[styles.iconContainer, isActive && styles.activeIconContainer]}>
               <Icon name={item.icon} size={28} color={isActive ? '#FFFFFF' : '#AAB07F'} />

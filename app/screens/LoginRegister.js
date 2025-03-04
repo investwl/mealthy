@@ -13,8 +13,8 @@ export default function App() {
 
   const loadFonts = async () => {
     await Font.loadAsync({
-      'PlusJakartaSans-Regular': require('./assets/PlusJakartaSans-Regular.ttf'),
-      'PlusJakartaSans-Bold': require('./assets/PlusJakartaSans-Bold.ttf'),
+      'PlusJakartaSans-Regular': require('../assets/PlusJakartaSans-Regular.ttf'),
+      'PlusJakartaSans-Bold': require('../assets/PlusJakartaSans-Bold.ttf'),
     });
     setFontsLoaded(true);
   };

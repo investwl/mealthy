@@ -1,0 +1,51 @@
+{
+  "name": "mealthy",
+  "license": "0BSD",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web",
+    "server": "nodemon server.js"
+  },
+  "dependencies": {
+    "@react-native-community/datetimepicker": "8.2.0",
+    "@react-native-ml-kit/text-recognition": "^1.5.2",
+    "@react-navigation/native": "^7.0.14",
+    "@react-navigation/stack": "^7.1.1",
+    "axios": "^1.7.9",
+    "cors": "^2.8.5",
+    "expo": "~52.0.23",
+    "expo-app-loading": "^2.1.1",
+    "expo-camera": "^16.0.17",
+    "expo-clipboard": "~7.0.1",
+    "expo-font": "~13.0.2",
+    "expo-image-manipulator": "^13.0.6",
+    "expo-image-picker": "^16.0.6",
+    "expo-linear-gradient": "^14.0.2",
+    "expo-sharing": "^13.0.1",
+    "expo-status-bar": "~2.0.0",
+    "express": "^4.21.2",
+    "moment": "^2.30.1",
+    "nodemon": "^3.1.9",
+    "pg": "^8.13.3",
+    "react": "18.3.1",
+    "react-native": "0.76.5",
+    "react-native-camera": "^4.2.1",
+    "react-native-dotenv": "^3.4.11",
+    "react-native-image-picker": "^8.1.0",
+    "react-native-mlkit-ocr": "^0.3.0",
+    "react-native-progress": "^5.0.1",
+    "react-native-safe-area-context": "^5.2.0",
+    "react-native-screens": "^4.9.0",
+    "react-native-svg": "^15.11.1",
+    "react-native-vector-icons": "^10.2.0",
+    "@react-native-async-storage/async-storage": "1.23.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.20.0"
+  },
+  "private": true
+}

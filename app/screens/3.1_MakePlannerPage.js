@@ -1,13 +1,15 @@
-// filepath: /c:/Cawu 4 - Software Engineering/mealthy/app/screens/3.1_MakePlannerPage.js
-import React, { useState } from 'react';
-import { View, TouchableWithoutFeedback, Text, TouchableOpacity, Platform, Image, SafeAreaView } from 'react-native';
+import React, { useState, useContext } from 'react';
+import { View, TouchableWithoutFeedback, Text, TouchableOpacity, Platform, Image, SafeAreaView, ScrollView, Alert } from 'react-native';
 import { useFonts } from 'expo-font';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useRoute } from '@react-navigation/native';
 import styles from '../styles/3.1_MakePlannerStyles';
+import { UserContext } from '../config/UserContext';
 import Header from '../components/Header';
 import BottomNavigation from '../components/BottomNavigation';
+import axios from 'axios'; // Add this import
+import { NGROK_URL } from "@env"; // Add this import
 
 const MakePlannerPage = ({ navigation }) => {
   const [fontsLoaded] = useFonts({
@@ -17,11 +19,11 @@ const MakePlannerPage = ({ navigation }) => {
   });
 
   const route = useRoute();
-  // Get the recipeImage passed from RecipeCard
-  const { recipeImage } = route.params;
-
+  // Get the recipeImage, recipeTitle, and recipeId passed from RecipeCard
+  const { recipeImage, recipeTitle, recipeId } = route.params;
   const [date, setDate] = useState(new Date());
   const [showPicker, setShowPicker] = useState(false);
+  const { userId } = useContext(UserContext);
 
   // State to handle toggle for time buttons
   const [selectedMeal, setSelectedMeal] = useState({
@@ -47,6 +49,30 @@ const MakePlannerPage = ({ navigation }) => {
   // Check if any meal is selected
   const isSubmitDisabled = !selectedMeal.breakfast && !selectedMeal.lunch && !selectedMeal.dinner;
 
+  const handleSubmit = async () => {
+    const mealTime = selectedMeal.breakfast ? 'Breakfast' : selectedMeal.lunch ? 'Lunch' : 'Dinner';
+    const mealDate = date.toISOString().split('T')[0]; // Format date as YYYY-MM-DD
+
+    try {
+      const response = await axios.post(`${NGROK_URL}/meal_planner`, {
+        user_id: userId,
+        recipe_id: recipeId,
+        meal_time: mealTime,
+        meal_date: mealDate,
+        recipe_image: recipeImage, // Pass the recipe image
+        recipe_title: recipeTitle // Pass the recipe title
+      });
+      console.log("Meal planner saved:", response.data); // Add this line for debugging
+      navigation.goBack(); // Navigate back to the previous screen (RecipeCard)
+    } catch (error) {
+      if (error.response && error.response.status === 400) {
+        Alert.alert("Error", error.response.data); // Show alert for duplicate entry
+      } else {
+        console.error("Error saving meal planner:", error.response ? error.response.data : error.message); // Add detailed error logging
+      }
+    }
+  };
+
   if (!fontsLoaded) {
     return <View style={styles.loadingContainer}><Text>Loading...</Text></View>
   }
@@ -54,7 +80,8 @@ const MakePlannerPage = ({ navigation }) => {
   return (
     <TouchableWithoutFeedback onPress={() => setShowPicker(false)}>
       <SafeAreaView style={{ display: 'flex', height: '100%' }}>
-        <View style={styles.container}>
+        {/* dari View jadi ScrollView karena tidak bisa di scroll */}
+        <ScrollView style={styles.container}> 
           {/* Header with Back Button and Title */}
           <Header navigation={navigation} title="MEAL PLANNER" />
 
@@ -62,6 +89,7 @@ const MakePlannerPage = ({ navigation }) => {
           {recipeImage && (
             <View style={{ marginVertical: 20 }}>
               <Image source={{ uri: recipeImage }} style={styles.mealImage} />
+              <Text style={styles.mealName}>{recipeTitle}</Text>
             </View>
           )}
 
@@ -168,18 +196,14 @@ const MakePlannerPage = ({ navigation }) => {
             {/* Ganti fungsi onPress pada tombol submit */}
             <TouchableOpacity
               style={[styles.saveButton, isSubmitDisabled && styles.disabledButton]} // Menambahkan style disabledButton jika tombol tidak aktif
-              onPress={() => {
-                if (!isSubmitDisabled) {
-                  navigation.goBack(); // Menavigasi kembali ke halaman sebelumnya (RecipeCard)
-                }
-              }}
+              onPress={handleSubmit} // Update the onPress handler
               disabled={isSubmitDisabled} // Menonaktifkan tombol submit jika tidak ada meal yang dipilih
             >
               <Text style={styles.saveButtonText}>Submit</Text>
             </TouchableOpacity>
           </View>
-        </View>
-        <BottomNavigation navigation={navigation} />
+        </ScrollView>
+       <BottomNavigation navigation={navigation} />
       </SafeAreaView>
     </TouchableWithoutFeedback>
   );

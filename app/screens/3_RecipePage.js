@@ -1,12 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { View, Text, TextInput, FlatList, Image, ImageBackground, TouchableOpacity, ScrollView, SafeAreaView } from 'react-native';
 import styles from '../styles/3_RecipeStyles';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { useFonts } from 'expo-font';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import BottomNavigation from '../components/BottomNavigation';
+import { UserContext } from '../config/UserContext';
 import { NGROK_URL } from '@env';
 import axios from 'axios'; // Add axios for making HTTP requests
+import { useRoute } from '@react-navigation/native'; // Import useRoute
 
 const RecipePage = ({ navigation }) => {
   const [fontsLoaded] = useFonts({
@@ -21,6 +23,9 @@ const RecipePage = ({ navigation }) => {
   const [filteredRecipes, setFilteredRecipes] = useState({});
   const [isTrendingSelected, setIsTrendingSelected] = useState(false);
   const [allRecipes, setAllRecipes] = useState({});
+  // const route = useRoute(); // Get the route object
+  // const { user_id } = route.params; // Extract user_id from route parameters
+  const {userId} = useContext(UserContext);
 
   useEffect(() => {
     fetchRecipes();
@@ -172,7 +177,7 @@ const RecipePage = ({ navigation }) => {
   };
 
   const renderRecipeItem = ({ item }) => (
-    <TouchableOpacity style={styles.recipeItem} onPress={() => navigation.navigate('RecipeCard', { recipe: item })}>
+    <TouchableOpacity style={styles.recipeItem} onPress={() => navigation.navigate('RecipeCard', { recipe: item, user_id : userId })}>
       <Image source={{ uri: item.image_url }} style={styles.recipeImage} />
       <Text style={styles.recipeTitle}>{item.title}</Text>
       <View style={styles.recipeFooter}>
@@ -249,7 +254,8 @@ const RecipePage = ({ navigation }) => {
           ))}
         </ScrollView>
       </View>
-      <BottomNavigation navigation={navigation} />
+      {/* <BottomNavigation navigation={navigation} user_id={user_id}/> */}
+      <BottomNavigation navigation={navigation}/>
     </SafeAreaView>
   );
 };

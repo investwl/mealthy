@@ -1,5 +1,4 @@
-// filepath: /c:/Cawu 4 - Software Engineering/mealthy/app/config/RecipeCard.js
-import React, { useState } from "react";
+import React, { useState, useEffect, useContext } from "react"; // Import useEffect
 import { View, Text, Image, ScrollView, TouchableOpacity, Alert, Share } from "react-native";
 import * as Clipboard from 'expo-clipboard';
 import styles from "../config/recipe-card-styles";
@@ -7,7 +6,9 @@ import { useFonts } from 'expo-font';
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import Svg, { Circle } from 'react-native-svg';
 import { useRoute, useNavigation } from '@react-navigation/native';
+import {UserContext} from '../config/UserContext';
 import BottomNavigation from '../components/BottomNavigation';
+import axios from 'axios'; // Add this import
 
 const RecipeCard = () => {
 
@@ -24,20 +25,57 @@ const RecipeCard = () => {
   const [showNotification, setShowNotification] = useState(false);
   const navigation = useNavigation();
   const route = useRoute();
-  const { recipe } = route.params;
+  const { recipe } = route.params; // Access the recipe object
+  // const { user_id } = route.params; 
+  const {userId} = useContext(UserContext);
 
-  const toggleBookmark = () => {
-    const newValue = !bookmarked;
-    setBookmarked(newValue);
-    if (newValue) {
-      setShowNotification(true);
-      setTimeout(() => setShowNotification(false), 1000);
+  useEffect(() => {
+    const checkBookmarkStatus = async () => {
+      try {
+        const response = await axios.get(`${process.env.NGROK_URL}/favorite_recipes/check`, {
+          params: {
+            user_id: userId,
+            recipe_id: recipe.recipe_id
+          }
+        });
+        setBookmarked(response.data.isBookmarked);
+      } catch (error) {
+        console.error("Error checking bookmark status:", error);
+      }
+    };
+
+    checkBookmarkStatus();
+  }, [recipe.recipe_id, userId]);
+
+  const toggleBookmark = async () => {
+    try {
+      if (bookmarked) {
+        // Delete bookmark
+        await axios.delete(`${process.env.NGROK_URL}/favorite_recipes`, {
+          data: {
+            user_id: userId,
+            recipe_id: recipe.recipe_id
+          }
+        });
+        setBookmarked(false);
+      } else {
+        // Add bookmark
+        await axios.post(`${process.env.NGROK_URL}/favorite_recipes`, {
+          user_id: userId,
+          recipe_id: recipe.recipe_id
+        });
+        setBookmarked(true);
+        setShowNotification(true);
+        setTimeout(() => setShowNotification(false), 1000);
+      }
+    } catch (error) {
+      console.error("Error toggling bookmark:", error);
     }
   };
 
   const toggleCalendar = () => {
     // Navigate to MealPlanner passing the recipe image
-    navigation.navigate('MakePlanner', { recipeImage: recipe.image_url });
+    navigation.navigate('MakePlanner', { recipeImage: recipe.image_url, recipeTitle: recipe.title, recipeId: recipe.recipe_id });
   };
 
   const shareRecipe = async () => {

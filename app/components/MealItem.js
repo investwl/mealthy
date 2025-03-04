@@ -1,50 +1,48 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 
-const MealItem = ({ title, imageUrl, mealName, onPress }) => {
+const MealItem = ({ mealName, imageUrl, onPress }) => {
   return (
-    <View style={styles.mealContainer}>
-      <TouchableOpacity onPress={onPress}>
-        <Text style={styles.mealTitle}>{title} {'>'}</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.mealCard} onPress={onPress}>
-        <Image source={imageUrl} style={styles.mealImage} />
-        <Text style={styles.mealText}>{mealName}</Text>
-      </TouchableOpacity>
-    </View>
+    <TouchableOpacity style={styles.card} onPress={onPress}>
+      {/* Large image on top */}
+      <Image source={{ uri: imageUrl }} style={styles.cardImage} />
+      
+      {/* Text container below the image */}
+      <View style={styles.cardTextContainer}>
+        <Text style={styles.cardTitle}>{mealName}</Text>
+      </View>
+    </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
-  mealContainer: {
-    marginVertical: 10,
-  },
-  mealTitle: {
-    fontSize: 16,
-    marginLeft: 20,
-    marginBottom: 5,
-  },
-  mealCard: {
-    backgroundColor: '#FFF',
-    marginHorizontal: 20,
+  card: {
+    width: '90%',
+    backgroundColor: '#FFF9DB',
     borderRadius: 10,
-    overflow: 'hidden',
-    elevation: 2,
     borderWidth: 1,
     borderColor: '#000000',
-    shadowColor: "#000",
+    marginBottom: 10,
+    overflow: 'hidden', // ensures the image corners follow card radius
+    // Shadow / elevation
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
+    elevation: 3,
   },
-  mealImage: {
+  cardImage: {
     width: '100%',
-    height: 130,
+    height: 333, // adjust as needed
+    resizeMode: 'cover',
   },
-  mealText: {
+  cardTextContainer: {
     padding: 10,
-    backgroundColor: '#FBEEC1',
-    textAlign: 'center',
+  },
+  cardTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#333',
   },
 });
 

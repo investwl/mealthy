@@ -1,22 +1,27 @@
-import { StatusBar } from 'expo-status-bar';
-import { useState } from 'react';
-import styles from '../styles/1_LoginStyles';
+import React, { useState, useContext } from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, Alert, View, Image, SafeAreaView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { UserContext } from '../config/UserContext';
+import axios from 'axios';
+import { NGROK_URL } from "@env";
 
-const LoginPage = ({ navigation }) => {  
-  const [username, setUsername] = useState('');
+const LoginPage = ({ navigation }) => {
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isVisible, setIsVisible] = useState(false);
   const [errors, setErrors] = useState({});
+  const { setUserId } = useContext(UserContext) 
 
-  const LoggedIn = () => {
+  const LoggedIn = async () => {
+    const emailValidation = /^[^\s@]+@gmail\.com$/;
     const minPassLength = 8;
-    const passwordValidation =  /^(?=.[A-Z])(?=.[a-z])(?=.\d)(?=.[!@#$%^&])[A-Za-z\d!@#$%^&]{6,}$/;
+    const passwordValidation = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)[A-Za-z\d!]{6,}$/;
     const showErrors = {};
 
-    if (!username) {
-      showErrors.username = 'Username is required.';
+    if(!email){
+      showErrors.email = 'Email is required.'
+    } else if(!emailValidation.test(email)) {
+      showErrors.email = 'Invalid email format! Email must end with @gmail.com.'
     }
 
     if (!password) {
@@ -24,66 +29,73 @@ const LoginPage = ({ navigation }) => {
     } else if (password.length < minPassLength) {
       showErrors.password = `Password must be at least ${minPassLength} characters long.`;
     } else if (!passwordValidation.test(password)) {
-      showErrors.password = 'Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character.';
+      showErrors.password = 'Password must contain at least 1 uppercase letter, 1 lowercase letter, and 1 number.';
     }
 
     setErrors(showErrors);
 
-    // If there are no errors, navigate to MyProfile screen
     if (Object.keys(showErrors).length === 0) {
-      setUsername('');
-      setPassword('');
-      setErrors({});
-      
-      // Navigate to the MyProfile screen
-      navigation.navigate('MyProfile');
+      try {
+        const response = await axios.post(`${NGROK_URL}/api/login`, {  // API endpoint /api/login on server.js (SEE SERVER SIDE)
+          email: email,
+          password: password,
+        });
+
+        const userData = response.data;
+        setUserId(userData.user_id);
+        navigation.navigate('Recipe');
+        // const user_id = userData.user_id; // Extract user_id
+        // navigation.navigate('Recipe', { user_id: user_id }); // Pass user_id through navigation
+        setEmail('');
+        setPassword('');
+        setErrors({});
+      } catch (error) {
+        Alert.alert('Login Failed', error.message);
+      }
     }
   };
 
-  const handlePress = () => {
-    Alert.alert('Register', 'Are you sure you want to register?', [
-      {
-        text: 'Cancel',
-        onPress: () => console.log('Cancel Pressed'),
-        style: 'cancel',
-      },
-      {
-        text: 'OK',
-        onPress: () => {
-          navigation.navigate('RegisterPage');  
-        },
-      },
-    ]);
-  };
+  const ContinueAsGuest = async () => {
+    try {
+      const response = await axios.get(`${NGROK_URL}/api/guest`);
+      const guestUser = response.data;
+      // const user_id = guestUser.user_id
+      setUserId(guestUser.user_id);
+      // navigation.navigate('Recipe', {user_id : user_id});
+      navigation.navigate('Recipe');
+    } catch (error) {
+      Alert.alert('Load Guest Failed', error.message);
+    }
+  }
 
   return (
     <SafeAreaView style={styles.container}>
       <Image
-        source={require('../assets/logo_login.png')}
+        source={require('../assets/logo_#a6b37d.png')}
         style={styles.logo}
       />
       <Text style={styles.title}>LOGIN</Text>
 
       <SafeAreaView style={styles.inputArea}>
-        {/* Input username */}
+        {/* input email */}
         <SafeAreaView style={styles.inputContainer}>
-          <Ionicons name="person" size={20} color="#8C8C8C" style={styles.icon} />
-          <Text style={styles.label}>username</Text>
+          <Ionicons name="mail" size={20} color="#8C8C8C" style={styles.icon} />
+          <Text style={styles.label}>email</Text>
           <TextInput
             style={styles.input}
-            value={username}
-            onChangeText={(Text) => setUsername(Text)}
-            keyboardType="default"
-            autoCapitalize="none"
-          />
+            value={email}
+            onChangeText={(Text) => setEmail(Text)}
+            keyboardType='email-address'
+            autoCapitalize='none'
+            />
         </SafeAreaView>
-        {errors.username && (
+        {errors.email && (
           <SafeAreaView style={styles.errorContainer}>
-            <Text style={styles.errorText}>{errors.username}</Text>
+            <Text style={styles.errorText}>{errors.email}</Text>
           </SafeAreaView>
         )}
 
-        {/* Input password */}
+        {/* input password */}
         <SafeAreaView style={styles.inputContainer}>
           <Ionicons name="lock-closed" size={20} color="#8C8C8C" style={styles.icon} />
           <Text style={styles.label}>password</Text>
@@ -110,50 +122,178 @@ const LoginPage = ({ navigation }) => {
           </SafeAreaView>
         )}
 
-        {/* Forgot password */}
+        {/* forgot password */}
         <Text style={styles.forgotPassword}>
-          Forgot password? 
-          <Text
-            style={styles.link}
-            onPress={() =>
-              Alert.alert('Forgot Password', 'Kindly check your email to reset your password ^^')
-            }
-          >
-            {' '}
-            Click here!
-          </Text>
+          Forgot password?
+          <Text style={styles.link} onPress={() => Alert.alert('Forgot Password', 'Kindly check your email to reset your password ^^')}> Click here!</Text>
         </Text>
       </SafeAreaView>
 
-      {/* Login button */}
+      {/* login button */}
       <TouchableOpacity style={styles.button} onPress={LoggedIn}>
         <Text style={styles.buttonText}>Log In</Text>
       </TouchableOpacity>
-      
-      {/* Divider */}
+
+      {/* divider */}
       <View style={styles.dividerContainer}>
         <View style={styles.divider} />
         <Text style={styles.dividerText}>or</Text>
         <View style={styles.divider} />
       </View>
 
-      {/* Continue as guest button */}
+      {/* continue as guest button */}
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate('Recipe')} 
+        onPress={ContinueAsGuest}
       >
         <Text style={styles.buttonText}>Continue as Guest</Text>
       </TouchableOpacity>
 
-      {/* Not registered */}
-      <Text style={styles.notRegistered} onPress={handlePress}>
-        {' '}
-        I'm not registered yet
-      </Text>
+      {/* not registered */}
+      <Text style={styles.notRegistered} onPress={() => navigation.navigate('RegisterPage')}> I'm not registered yet</Text>
 
-      <StatusBar style="auto" />
+      {/* <StatusBar style="auto" /> */}
     </SafeAreaView>
   );
-};
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#FEFAE0',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 28,
+  },
+
+  logo: {
+    width: 85,
+    height: 85,
+    marginBottom: 10
+  },
+
+  title: {
+    fontSize: 28,
+    // fontWeight: 'bold',
+    marginBottom: 5,
+    color: '#000',
+    fontFamily: 'PlusJakartaSans-Bold',
+  },
+
+  inputArea: {
+    paddingHorizontal: 5,
+    paddingVertical: 20,
+  },
+
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
+    height: 50,
+    borderWidth: 1,
+    borderRadius: 10,
+    borderColor: '#8C8C8C',
+    marginTop: 20,
+    marginBottom: 5,
+    paddingHorizontal: 15,
+  },
+
+  errorContainer: {
+    width: '100%',
+  },
+
+  errorText: {
+    color: 'firebrick',
+    fontSize: 11,
+    // marginTop: 1,
+    textAlign: 'left',
+    marginHorizontal: 10,
+    flexWrap: 'wrap',
+    fontFamily: 'PlusJakartaSans-Regular',
+  },
+
+  label: {
+    position: 'absolute',
+    color: '#8C8C8C',
+    backgroundColor: '#FEFAE0',
+    padding: 5,
+    top: -17,
+    left: 10,
+    fontFamily: 'PlusJakartaSans-Regular',
+  },
+
+  input: {
+    flex: 1,
+    height: '100%',
+    fontSize: 16,
+    fontFamily: 'PlusJakartaSans-Regular',
+  },
+
+  icon: {
+    marginVertical: 5,
+    marginRight: 5,
+  },
+
+  iconRight: {
+    marginLeft: 8,
+  },
+
+  forgotPassword: {
+    color: '#8C8C8C',
+    alignSelf: 'flex-start',
+    fontSize: 13,
+    marginLeft: 10,
+    marginBottom: 10,
+    fontFamily: 'PlusJakartaSans-Regular',
+  },
+
+  link: {
+    // fontWeight: 'bold',
+    fontFamily: 'PlusJakartaSans-Bold',
+  },
+
+  button: {
+    width: '100%',
+    height: 50,
+    backgroundColor: '#C0C78C',
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginVertical: 10,
+  },
+
+  buttonText: {
+    color: '#000',
+    // fontWeight: 'bold',
+    fontSize: 16,
+    fontFamily: 'PlusJakartaSans-Bold',
+  },
+
+  dividerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '50%',
+  },
+
+  divider: {
+    flex: 1,
+    height: 1,
+    backgroundColor: '#8C8C8C',
+    borderRadius: 10,
+  },
+
+  dividerText: {
+    color: '#8C8C8C',
+    marginHorizontal: 10,
+    top: -2,
+    fontFamily: 'PlusJakartaSans-Regular',
+  },
+
+  notRegistered: {
+    color: '#8C8C8C',
+    fontFamily: 'PlusJakartaSans-Regular',
+  }
+
+});
 
 export default LoginPage;

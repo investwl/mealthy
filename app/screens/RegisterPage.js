@@ -50,7 +50,7 @@ const RegisterPage = ({navigation}) => {
   return (
     <SafeAreaView style={styles.container}>
       <Image
-        source={require('./assets/logo_#a6b37d.png')}
+        source={require('../assets/logo_#a6b37d.png')}
         style={styles.logo}
       />
       <Text style={styles.title}>REGISTER</Text>

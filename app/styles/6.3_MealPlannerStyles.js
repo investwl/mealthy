@@ -14,9 +14,9 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 20,
-    fontWeight: 'bold',
     color: '#333',
     marginBottom: 5,
+    fontFamily: 'PlusJakartaSans-Bold'
   },
   dateContainer: {
     backgroundColor: '#FFF9DB',
@@ -39,6 +39,7 @@ const styles = StyleSheet.create({
   dateText: {
     fontSize: 16,
     color: '#333',
+    fontFamily: 'PlusJakartaSans-Regular',
   },
   pickerOverlay: {
     position: 'absolute',
@@ -65,8 +66,77 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   scrollContainer: {
-    paddingBottom: 30,  
+    paddingBottom: 20,
   },
+  mealSection: {
+    marginBottom: 20,
+  },
+  mealTitle: {
+    fontSize: 20,
+    fontFamily: 'PlusJakartaSans-Bold',
+    color: '#333',
+    marginBottom: 5,
+    marginLeft: 20,
+  },
+  mealBox: {
+    backgroundColor: '#FFF9DB',
+    padding: 12,
+    borderRadius: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#000000',
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
+    marginBottom: 10,
+  },
+  mealImage: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    marginRight: 10,
+  },
+  mealTextContainer: {
+    justifyContent: 'center',
+  },
+  mealName: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  mealDescription: {
+    fontSize: 14,
+    color: '#555',
+  },
+  emptyMealBox: {
+    backgroundColor: '#FFF9DB',
+    padding: 12,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    textAlign: 'center',
+    borderWidth: 1,
+    borderColor: '#000000',
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
+    marginBottom: 10,
+    width: '90%',
+  },
+  emptyMealText: {
+    fontSize: 16,
+    color: '#555',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },  
 });
 
 export default styles;
