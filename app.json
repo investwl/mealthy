@@ -7,7 +7,11 @@
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "bundleIdentifier": "com.yourapp.identifier",
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "We need access to your photo library to update your profile picture.",
+        "NSCameraUsageDescription": "We need access to your camera to take a new profile picture."
+      }
     },
     "android": {
       "adaptiveIcon": {
